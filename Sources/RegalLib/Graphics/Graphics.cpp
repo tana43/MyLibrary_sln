@@ -82,7 +82,8 @@ namespace Regal::Graphics
 		createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif // _DEBUG
 
-		/*D3D_FEATURE_LEVEL featureLevels[]
+#if 1
+		D3D_FEATURE_LEVEL featureLevels[]
 		{
 			D3D_FEATURE_LEVEL_11_1,
 			D3D_FEATURE_LEVEL_11_0
@@ -94,7 +95,8 @@ namespace Regal::Graphics
 			device.ReleaseAndGetAddressOf(), &featureLevel, immediateContext.ReleaseAndGetAddressOf()
 		);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-		_ASSERT_EXPR(!(featureLevel < D3D_FEATURE_LEVEL_11_0), L"Direct3D Feature Level 11 unsupported.");*/
+		_ASSERT_EXPR(!(featureLevel < D3D_FEATURE_LEVEL_11_0), L"Direct3D Feature Level 11 unsupported.");
+#else
 		D3D_FEATURE_LEVEL featureLevels{ D3D_FEATURE_LEVEL_11_1, };
 		hr = D3D11CreateDevice(
 			adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, 0,
@@ -102,6 +104,7 @@ namespace Regal::Graphics
 			device.ReleaseAndGetAddressOf(), NULL, immediateContext.ReleaseAndGetAddressOf()
 		);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
+#endif // 1
 
 		CreateSwapChain(dxgiFactory6.Get());
 
@@ -166,17 +169,16 @@ namespace Regal::Graphics
 			swapChainDesk1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 			swapChainDesk1.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
 			swapChainDesk1.Flags = tearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
-			hr = dxgiFactory6->CreateSwapChainForHwnd(device.Get(), hwnd, &swapChainDesk1, nullptr, nullptr, swapChain.ReleaseAndGetAddressOf());
+			hr = dxgiFactory6->CreateSwapChainForHwnd(device.Get(), hwnd, &swapChainDesk1, nullptr, nullptr, swapChain.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			//標準のフルスクリーン入力 alt+enter を無効にしている
-			dxgiFactory6->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
+			hr = dxgiFactory6->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer{};
 			hr = swapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()));
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-
 			hr = device->CreateRenderTargetView(backBuffer.Get(), nullptr, renderTargetView.ReleaseAndGetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}

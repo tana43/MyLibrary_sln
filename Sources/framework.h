@@ -80,7 +80,7 @@ public:
 		IMGUI_CTRL_UNINITIALIZE();
 
 #if 1
-		BOOL fullscreen = 0;
+		BOOL fullscreen{};
 		Regal::Graphics::Graphics::Instance().GetSwapChain()->GetFullscreenState(&fullscreen, 0);
 		if (fullscreen)
 		{
@@ -194,7 +194,11 @@ private:
 			std::wostringstream outs;
 			outs.precision(6);
 			outs << L" : FPS : " << fps << L" / " << L"Frame Time : " << 1000.0f / fps << L" (ms)";
+
+#if _DEBUG
 			SetWindowTextW(hwnd, outs.str().c_str());
+#endif // _DEBUG
+
 
 			frames = 0;
 			elapsed_time += 1.0f;
