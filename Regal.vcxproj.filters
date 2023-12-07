@@ -64,42 +64,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\RegalLib\Graphics\Bloom.cpp">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Graphics\Framebuffer.cpp">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Graphics\FullscreenQuad.cpp">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Graphics\Particles.cpp">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Graphics\SkyBox.cpp">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\GeometricPrimitive.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\GltfModel.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\SkinnedMesh.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\Sprite.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\SpriteBatch.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\StaticMesh.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\Texture.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
     <ClCompile Include="External\imgui\imgui.cpp">
       <Filter>External\imgui</Filter>
     </ClCompile>
@@ -121,38 +85,8 @@
     <ClCompile Include="External\imgui\imgui_widgets.cpp">
       <Filter>External\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Resource\Shader.cpp">
-      <Filter>RegalLib\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Scene\SceneManager.cpp">
-      <Filter>RegalLib\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Graphics\Graphics.cpp">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="External\imgui\ImGuiCtrl.cpp">
       <Filter>External\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Input\Input.cpp">
-      <Filter>RegalLib\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Input\Keyboard.cpp">
-      <Filter>RegalLib\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Input\Mouse.cpp">
-      <Filter>RegalLib\Input</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Game\Transform.cpp">
-      <Filter>RegalLib\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Game\Camera.cpp">
-      <Filter>RegalLib\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Model\StaticModel.cpp">
-      <Filter>RegalLib\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\RegalLib\Demo\DemoScene.cpp">
-      <Filter>RegalLib\Demo</Filter>
     </ClCompile>
     <ClCompile Include="Sources\TitleScene.cpp">
       <Filter>Game\Scene</Filter>
@@ -166,50 +100,77 @@
     <ClCompile Include="Sources\Main.cpp">
       <Filter>Game\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Sources\RegalLib\DemoScene.cpp">
+      <Filter>RegalLib\Demo</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Bloom.cpp">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Framebuffer.cpp">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\FullscreenQuad.cpp">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Graphics.cpp">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Particles.cpp">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\SkyBox.cpp">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\GamePad.cpp">
+      <Filter>RegalLib\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Input.cpp">
+      <Filter>RegalLib\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Keyboard.cpp">
+      <Filter>RegalLib\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Mouse.cpp">
+      <Filter>RegalLib\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\StaticModel.cpp">
+      <Filter>RegalLib\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\GeometricPrimitive.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\GltfModel.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Shader.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\SkinnedMesh.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Sprite.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\SpriteBatch.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\StaticMesh.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Texture.cpp">
+      <Filter>RegalLib\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\SceneManager.cpp">
+      <Filter>RegalLib\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Camera.cpp">
+      <Filter>RegalLib\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\RegalLib\Transform.cpp">
+      <Filter>RegalLib\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\RegalLib\Graphics\Bloom.h">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Graphics\Framebuffer.h">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Graphics\FullscreenQuad.h">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Graphics\Particles.h">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Graphics\SkyBox.h">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Helper\MathHelper.h">
-      <Filter>RegalLib\Helper</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\GeometricPrimitive.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\GltfModel.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\SkinnedMesh.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\Sprite.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\SpriteBatch.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\StaticMesh.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\Texture.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Other\Misc.h">
-      <Filter>RegalLib\Other</Filter>
-    </ClInclude>
     <ClInclude Include="External\imgui\imconfig.h">
       <Filter>External\imgui</Filter>
     </ClInclude>
@@ -237,44 +198,8 @@
     <ClInclude Include="Sources\RegalLib\Regal.h">
       <Filter>RegalLib</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Resource\Shader.h">
-      <Filter>RegalLib\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Scene\SceneManager.h">
-      <Filter>RegalLib\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Scene\BaseScene.h">
-      <Filter>RegalLib\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Graphics\Graphics.h">
-      <Filter>RegalLib\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="External\imgui\ImGuiCtrl.h">
       <Filter>External\imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Input\Input.h">
-      <Filter>RegalLib\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Input\Keyboard.h">
-      <Filter>RegalLib\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Input\Mouse.h">
-      <Filter>RegalLib\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Game\Transform.h">
-      <Filter>RegalLib\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Game\Camera.h">
-      <Filter>RegalLib\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Model\Model.h">
-      <Filter>RegalLib\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Model\StaticModel.h">
-      <Filter>RegalLib\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RegalLib\Demo\DemoScene.h">
-      <Filter>RegalLib\Demo</Filter>
     </ClInclude>
     <ClInclude Include="Sources\TitleScene.h">
       <Filter>Game\Scene</Filter>
@@ -287,6 +212,87 @@
     </ClInclude>
     <ClInclude Include="Sources\HighResolutionTimer.h">
       <Filter>Game\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\DemoScene.h">
+      <Filter>RegalLib\Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Bloom.h">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Framebuffer.h">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\FullscreenQuad.h">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Graphics.h">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Particles.h">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\SkyBox.h">
+      <Filter>RegalLib\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\MathHelper.h">
+      <Filter>RegalLib\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\GamePad.h">
+      <Filter>RegalLib\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Input.h">
+      <Filter>RegalLib\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Keyboard.h">
+      <Filter>RegalLib\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Mouse.h">
+      <Filter>RegalLib\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Model.h">
+      <Filter>RegalLib\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\StaticModel.h">
+      <Filter>RegalLib\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Misc.h">
+      <Filter>RegalLib\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\GeometricPrimitive.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\GltfModel.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Shader.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\SkinnedMesh.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Sprite.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\SpriteBatch.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\StaticMesh.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Texture.h">
+      <Filter>RegalLib\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\SceneManager.h">
+      <Filter>RegalLib\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\BaseScene.h">
+      <Filter>RegalLib\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Camera.h">
+      <Filter>RegalLib\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Transform.h">
+      <Filter>RegalLib\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

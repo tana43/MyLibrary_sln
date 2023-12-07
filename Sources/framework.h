@@ -16,6 +16,8 @@
 #include "../External/imgui/ImGuiCtrl.h"
 #endif
 
+
+
 class Framework
 {
 public:
@@ -79,7 +81,7 @@ public:
 		// ImGuiI—¹‰»
 		IMGUI_CTRL_UNINITIALIZE();
 
-#if 1
+#if 0
 		BOOL fullscreen{};
 		Regal::Graphics::Graphics::Instance().GetSwapChain()->GetFullscreenState(&fullscreen, 0);
 		if (fullscreen)

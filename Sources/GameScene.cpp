@@ -59,8 +59,9 @@ void GameScene::Render(const float& elapsedTime)
 	{
 		graphics.Set2DStates();
 
-		sprite->Render(graphics.GetDeviceContext(), 0, 0,
-			graphics.GetScreenWidth(), graphics.GetScreenHeight(), 0);
+		sprite->Render();
+		/*sprite->Render(graphics.GetDeviceContext(), 0, 0,
+			graphics.GetScreenWidth(), graphics.GetScreenHeight(), 0);*/
 	}
 
 	//パーティクル

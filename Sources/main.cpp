@@ -1,14 +1,9 @@
 #include <time.h>
 
 #include "Framework.h"
+#include "RegalLib/Graphics.h"
 
-#if 1
-CONST LONG SCREEN_WIDTH{ 1280 };
-CONST LONG SCREEN_HEIGHT{ 720 };
-#else
-CONST LONG SCREEN_WIDTH{ 1920 };
-CONST LONG SCREEN_HEIGHT{ 1080 };
-#endif // 1
+
 CONST LPCWSTR APPLICATION_NAME{ L"Regal Library" };
 
 LRESULT CALLBACK window_procedure(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -50,7 +45,7 @@ int WINAPI WinMain(_In_ HINSTANCE instance, _In_opt_  HINSTANCE prev_instance, _
 	HWND hwnd = CreateWindowExW(0, APPLICATION_NAME, L"Regal", WS_OVERLAPPEDWINDOW ^ WS_MAXIMIZEBOX ^ WS_THICKFRAME | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, instance, NULL);
 	ShowWindow(hwnd, cmd_show);
 
-	bool fullscreen{ TRUE };
+	bool fullscreen{ FALSE };
 	Framework framework(hwnd,fullscreen);
 	SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&framework));
 	return framework.Run();
