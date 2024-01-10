@@ -30,8 +30,11 @@ namespace Regal::Game
 
         void Initialize();
 
-        void Update();
+        void Update(const float& elapsedTime);
         void UpdateViewProjectionMatrix();
+
+        //デバッグ用のカメラ挙動
+        void DebugCameraMovement(const float& elapsedTime);
 
         DirectX::XMMATRIX CalcViewMatrix() const;
         DirectX::XMMATRIX CalcProjectionMatrix() const;
@@ -50,5 +53,7 @@ namespace Regal::Game
 
         TransformEuler transform;
         Parameters parameters;
+
+        float debugCameraRollSpeed_{0.2f};
     };
 }

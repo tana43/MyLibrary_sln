@@ -49,6 +49,9 @@ namespace Regal::Demo
 
     void DemoScene::Update(const float& elapsedTime)
     {
+		//カメラ
+		Regal::Game::Camera::Instance().Update(elapsedTime);
+
 		//スペースでパーティクルリセット
 		if (Regal::Input::Keyboard::Instance().GetKeyDown(DirectX::Keyboard::Space))
 		{

@@ -94,8 +94,14 @@ namespace Regal::Graphics
 		
 
 		BOOL fullscreenMode;
+#if _DEBUG
+		BOOL vsync{ FALSE };//‚’¼“¯Šú
+		BOOL tearingSupported{ TRUE };
+#else
 		BOOL vsync{ TRUE };//‚’¼“¯Šú
 		BOOL tearingSupported{ FALSE };
+#endif // _DEBUG
+
 
 	private:
 		void CreateSwapChain(IDXGIFactory6* dxgiFactory6);

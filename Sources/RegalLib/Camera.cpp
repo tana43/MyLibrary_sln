@@ -4,6 +4,8 @@
 
 #include "../../../External/imgui/imgui.h"
 
+#include "Input.h"
+
 namespace Regal::Game
 {
     void Camera::Initialize()
@@ -12,9 +14,9 @@ namespace Regal::Game
 		//transform.SetRotationY(DirectX::XMConvertToRadians(180));
     }
 
-    void Camera::Update()
+    void Camera::Update(const float& elapsedTime)
     {
-		
+		DebugCameraMovement(elapsedTime);
     }
 
 	void Camera::UpdateViewProjectionMatrix()
@@ -36,7 +38,62 @@ namespace Regal::Game
 		ViewProjection = V * P;
 	}
 
-    DirectX::XMMATRIX Camera::CalcViewMatrix() const
+	void Camera::DebugCameraMovement(const float& elapsedTime)
+	{
+		//回転	
+		{
+			//右クリックを押している間のみマウスでのカメラ回転を可能にする
+			if (!Regal::Input::Mouse::Instance().GetButtonState().rightButton)return;
+
+			auto& mouse = Regal::Input::Mouse::Instance();
+			static DirectX::XMFLOAT2 lastMousePos = { static_cast<float>(mouse.GetPosX()),static_cast<float>(mouse.GetPosY()) };
+			const DirectX::XMFLOAT2 mousePos = { static_cast<float>(mouse.GetPosX()),static_cast<float>(mouse.GetPosY()) };
+
+			//前回とのカーソル座標の差でカメラが大きく回転することを防止する
+			if (Regal::Input::Mouse::Instance().GetButtonDown(Regal::Input::Mouse::BTN_RIGHT))
+			{
+				lastMousePos = mousePos;
+				return;
+			}
+
+			//マウスの移動量をカメラの回転値に変換
+			const DirectX::XMFLOAT2 mousePosDistance = mousePos - lastMousePos;
+			const float rotValueX = mousePosDistance.y * debugCameraRollSpeed_ * elapsedTime;
+			const float rotValueY = mousePosDistance.x * debugCameraRollSpeed_ * elapsedTime;
+			transform.AddRotation(DirectX::XMFLOAT3(rotValueX, rotValueY, 0));
+
+			lastMousePos = mousePos;
+		}
+
+		//移動
+		{
+			const auto& keyState = Regal::Input::Keyboard::Instance().GetKeyState();
+
+			DirectX::XMFLOAT3 velocity{};
+			if (keyState.W)
+			{
+				velocity = velocity + transform.CalcForward();
+			}
+			if (keyState.A)
+			{
+				velocity = velocity - transform.CalcRight();
+			}
+			if (keyState.S)
+			{
+				velocity = velocity - transform.CalcForward();
+			}
+			if (keyState.D)
+			{
+				velocity = velocity + transform.CalcRight();
+			}
+
+			if (keyState.LeftShift)velocity = velocity * 3.0f;
+
+			transform.AddPosition(velocity * elapsedTime);
+		}
+	}
+
+	DirectX::XMMATRIX Camera::CalcViewMatrix() const
     {
 		DirectX::XMFLOAT3 forward = transform.CalcForward();
 
