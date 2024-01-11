@@ -4,6 +4,8 @@
 #include "Keyboard.h"
 #include "GamePad.h"
 
+using Device = unsigned int;
+
 namespace Regal::Input
 {
     //このクラスから各種入力のアップデートをする
@@ -15,18 +17,25 @@ namespace Regal::Input
         ~Input() {}
 
     public:
+        static const Device KEYBOARD = 0;
+        static const Device GAMEPAD  = 1;
+
+    public:
+
         static Input& Instance()
         {
-            static Input instance;
-            return instance;
+            static Input instance_;
+            return instance_;
         }
 
         void Update();
 
-        static GamePad& GetGamePad() { return Instance().gamePad; }
+        static GamePad& GetGamePad() { return Instance().gamePad_; }
 
     private:
-        GamePad gamePad;
+        GamePad gamePad_;
+
+        Device useDevice_;
     };
 }
 

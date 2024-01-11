@@ -11,7 +11,7 @@ using namespace Regal::Demo;
 
 Framework::Framework(HWND hwnd,BOOL fullscreen) : 
 	hwnd(hwnd),
-	graphics(hwnd,fullscreen)
+	graphics_(hwnd,fullscreen)
 {
 }
 
@@ -20,17 +20,17 @@ bool Framework::Initialize()
 	HRESULT hr{ S_OK };
 
 	//シーン用バッファー作成
-	graphics.GetShader()->CreateSceneBuffer(graphics.GetDevice());
+	graphics_.GetShader()->CreateSceneBuffer(graphics_.GetDevice());
 
 	//抽出輝度成分の輝度の閾値を制御するためのバッファ
 	D3D11_BUFFER_DESC bufferDesc{};
-	bufferDesc.ByteWidth = sizeof(parametricConstants);
+	bufferDesc.ByteWidth = sizeof(parametricConstants_);
 	bufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
-	hr = graphics.GetDevice()->CreateBuffer(&bufferDesc, nullptr, constantBuffers[1].GetAddressOf());
+	hr = graphics_.GetDevice()->CreateBuffer(&bufferDesc, nullptr, constantBuffers_[1].GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 	Graphics& graphics{ Graphics::Instance() };
@@ -212,7 +212,7 @@ void Framework::DrawDebug()
 			ImGui::EndMenu();
 		}
 
-		graphics.DrawDebug();
+		graphics_.DrawDebug();
 
 		SceneManager::Instance().DrawDebug();
 

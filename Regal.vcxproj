@@ -259,6 +259,7 @@
     <ClInclude Include="Sources\RegalLib\Bloom.h" />
     <ClInclude Include="Sources\RegalLib\Camera.h" />
     <ClInclude Include="Sources\RegalLib\DemoScene.h" />
+    <ClInclude Include="Sources\RegalLib\Easing.h" />
     <ClInclude Include="Sources\RegalLib\Framebuffer.h" />
     <ClInclude Include="Sources\RegalLib\FullscreenQuad.h" />
     <ClInclude Include="Sources\RegalLib\GamePad.h" />

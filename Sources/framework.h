@@ -30,16 +30,16 @@ public:
 	//	DirectX::XMFLOAT4 cameraPosition;
 	//	//DirectX::XMFLOAT4X4 inverseViewProjection;//ビュープロジェクション逆行列
 	//};
-	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffers[8];
+	Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffers_[8];
 
 	struct ParametricConstants
 	{
-		float extractionThreshold{ 0.0f };
-		float gaussianSigma{1.0f};
-		float bloomIntensity{1.0f};
-		float exposure{1.2f};
+		float extractionThreshold_{ 0.0f };
+		float gaussianSigma_{1.0f};
+		float bloomIntensity_{1.0f};
+		float exposure_{1.2f};
 	};
-	ParametricConstants parametricConstants;
+	ParametricConstants parametricConstants_;
 
 
 	Framework(HWND hwnd,BOOL fullscreen);
@@ -60,7 +60,7 @@ public:
 		}
 
 		// ImGui初期化(DirectX11の初期化の下に置くこと)
-		IMGUI_CTRL_INITIALIZE(hwnd, graphics.GetDevice(), graphics.GetDeviceContext());
+		IMGUI_CTRL_INITIALIZE(hwnd, graphics_.GetDevice(), graphics_.GetDeviceContext());
 
 		while (WM_QUIT != msg.message)
 		{
@@ -71,10 +71,10 @@ public:
 			}
 			else
 			{
-				tictoc.tick();
+				tictoc_.tick();
 				CalculateFrameStats();
-				Update(tictoc.time_interval());
-				Render(tictoc.time_interval());
+				Update(tictoc_.time_interval());
+				Render(tictoc_.time_interval());
 			}
 		}
 
@@ -126,10 +126,10 @@ public:
 			DirectX::Keyboard::ProcessMessage(msg, wparam, lparam);
 			break;
 		case WM_ENTERSIZEMOVE:
-			tictoc.stop();
+			tictoc_.stop();
 			break;
 		case WM_EXITSIZEMOVE:
-			tictoc.start();
+			tictoc_.start();
 			break;
 		case WM_SIZE:
 		{
@@ -179,20 +179,20 @@ private:
 	void DrawDebug();
 
 private:
-	Regal::Graphics::Graphics graphics;
+	Regal::Graphics::Graphics graphics_;
 
 private:
 
 	float color[4] = { 0.1f,0.1f,0.1f,1.0f };
 
-	high_resolution_timer tictoc;
-	uint32_t frames{ 0 };
-	float elapsed_time{ 0.0f };
+	high_resolution_timer tictoc_;
+	uint32_t frames_{ 0 };
+	float elapsedTime_{ 0.0f };
 	void CalculateFrameStats()
 	{
-		if (++frames, (tictoc.time_stamp() - elapsed_time) >= 1.0f)
+		if (++frames_, (tictoc_.time_stamp() - elapsedTime_) >= 1.0f)
 		{
-			float fps = static_cast<float>(frames);
+			float fps = static_cast<float>(frames_);
 			std::wostringstream outs;
 			outs.precision(6);
 			outs << L" : FPS : " << fps << L" / " << L"Frame Time : " << 1000.0f / fps << L" (ms)";
@@ -202,8 +202,8 @@ private:
 #endif // _DEBUG
 
 
-			frames = 0;
-			elapsed_time += 1.0f;
+			frames_ = 0;
+			elapsedTime_ += 1.0f;
 		}
 	}
 
@@ -219,7 +219,7 @@ private:
 	std::unique_ptr<Regal::Graphics::Particles> particles;*/
 
 
-	float spriteColors[4] = { 1.0f,1.0f,1.0f,1.0f };
+	float spriteColors_[4] = { 1.0f,1.0f,1.0f,1.0f };
 
 	//float cameraFov{30};
 	//float cameraFar{100.0f};
@@ -231,12 +231,12 @@ private:
 	//float boneTranslationX{ 300.0f };
 	//float blendAnimation{ 0.5f };
 
-	std::unique_ptr<Regal::Graphics::FullscreenQuad> bitBlockTransfer;
+	std::unique_ptr<Regal::Graphics::FullscreenQuad> bitBlockTransfer_;
 
-	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShaders[8];
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShaders_[8];
 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceViews[8];
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceViews_[8];
 
-	std::unique_ptr<Regal::Graphics::Bloom> bloomer;
+	std::unique_ptr<Regal::Graphics::Bloom> bloomer_;
 };
 

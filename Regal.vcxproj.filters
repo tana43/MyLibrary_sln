@@ -294,6 +294,9 @@
     <ClInclude Include="Sources\RegalLib\Transform.h">
       <Filter>RegalLib\Game</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\RegalLib\Easing.h">
+      <Filter>RegalLib\Helper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Sources\Shaders\Sprite.hlsli">

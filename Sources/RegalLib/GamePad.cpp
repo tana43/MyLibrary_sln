@@ -8,15 +8,15 @@
 // 更新
 void GamePad::Update()
 {
-	axisLx = axisLy = 0.0f;
-	axisRx = axisRy = 0.0f;
-	triggerL = triggerR = 0.0f;
+	axisLx_ = axisLy_ = 0.0f;
+	axisRx_ = axisRy_ = 0.0f;
+	triggerL_ = triggerR_ = 0.0f;
 
 	GamePadButton newButtonState = 0;
 
 	// ボタン情報取得
 	XINPUT_STATE xinputState;
-	if (XInputGetState(slot, &xinputState) == ERROR_SUCCESS)
+	if (XInputGetState(slot_, &xinputState) == ERROR_SUCCESS)
 	{
 		//XINPUT_CAPABILITIES caps;
 		//XInputGetCapabilities(m_slot, XINPUT_FLAG_GAMEPAD, &caps);
@@ -53,12 +53,12 @@ void GamePad::Update()
 			pad.sThumbRY = 0;
 		}
 
-		triggerL = static_cast<float>(pad.bLeftTrigger) / 255.0f;
-		triggerR = static_cast<float>(pad.bRightTrigger) / 255.0f;
-		axisLx = static_cast<float>(pad.sThumbLX) / static_cast<float>(0x8000);
-		axisLy = static_cast<float>(pad.sThumbLY) / static_cast<float>(0x8000);
-		axisRx = static_cast<float>(pad.sThumbRX) / static_cast<float>(0x8000);
-		axisRy = static_cast<float>(pad.sThumbRY) / static_cast<float>(0x8000);
+		triggerL_ = static_cast<float>(pad.bLeftTrigger) / 255.0f;
+		triggerR_ = static_cast<float>(pad.bRightTrigger) / 255.0f;
+		axisLx_ = static_cast<float>(pad.sThumbLX) / static_cast<float>(0x8000);
+		axisLy_ = static_cast<float>(pad.sThumbLY) / static_cast<float>(0x8000);
+		axisRx_ = static_cast<float>(pad.sThumbRX) / static_cast<float>(0x8000);
+		axisRy_ = static_cast<float>(pad.sThumbRY) / static_cast<float>(0x8000);
 	}
 	else
 	{
@@ -180,10 +180,10 @@ void GamePad::Update()
 
 	// ボタン情報の更新
 	{
-		buttonState[1] = buttonState[0];	// スイッチ履歴
-		buttonState[0] = newButtonState;
+		buttonState_[1] = buttonState_[0];	// スイッチ履歴
+		buttonState_[0] = newButtonState;
 
-		buttonDown = ~buttonState[1] & newButtonState;	// 押した瞬間
-		buttonUp = ~newButtonState & buttonState[1];	// 離した瞬間
+		buttonDown_ = ~buttonState_[1] & newButtonState;	// 押した瞬間
+		buttonUp_ = ~newButtonState & buttonState_[1];	// 離した瞬間
 	}
 }

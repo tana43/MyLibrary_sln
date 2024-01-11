@@ -10,13 +10,16 @@ namespace Regal::Game
 {
     void Camera::Initialize()
     {
-		transform.SetPosition(DirectX::XMFLOAT3(0, 0, -10));
+		transform_.SetPosition(DirectX::XMFLOAT3(0, 0, -10));
 		//transform.SetRotationY(DirectX::XMConvertToRadians(180));
     }
 
     void Camera::Update(const float& elapsedTime)
     {
+#if _DEBUG
 		DebugCameraMovement(elapsedTime);
+#endif // _DEBUG
+
     }
 
 	void Camera::UpdateViewProjectionMatrix()
@@ -28,14 +31,14 @@ namespace Regal::Game
 		};
 		immediateContext->RSGetViewports(&numViewports, &viewport);
 
-		parameters.width = viewport.Width;
-		parameters.height = viewport.Height;
-		parameters.aspectRatio = viewport.Width / viewport.Height;
+		parameters_.width_ = viewport.Width;
+		parameters_.height_ = viewport.Height;
+		parameters_.aspectRatio_ = viewport.Width / viewport.Height;
 
 		const DirectX::XMMATRIX P{CalcProjectionMatrix()};
 		const DirectX::XMMATRIX V{CalcViewMatrix()};
 
-		ViewProjection = V * P;
+		ViewProjection_ = V * P;
 	}
 
 	void Camera::DebugCameraMovement(const float& elapsedTime)
@@ -60,7 +63,7 @@ namespace Regal::Game
 			const DirectX::XMFLOAT2 mousePosDistance = mousePos - lastMousePos;
 			const float rotValueX = mousePosDistance.y * debugCameraRollSpeed_ * elapsedTime;
 			const float rotValueY = mousePosDistance.x * debugCameraRollSpeed_ * elapsedTime;
-			transform.AddRotation(DirectX::XMFLOAT3(rotValueX, rotValueY, 0));
+			transform_.AddRotation(DirectX::XMFLOAT3(rotValueX, rotValueY, 0));
 
 			lastMousePos = mousePos;
 		}
@@ -72,39 +75,39 @@ namespace Regal::Game
 			DirectX::XMFLOAT3 velocity{};
 			if (keyState.W)
 			{
-				velocity = velocity + transform.CalcForward();
+				velocity = velocity + transform_.CalcForward();
 			}
 			if (keyState.A)
 			{
-				velocity = velocity - transform.CalcRight();
+				velocity = velocity - transform_.CalcRight();
 			}
 			if (keyState.S)
 			{
-				velocity = velocity - transform.CalcForward();
+				velocity = velocity - transform_.CalcForward();
 			}
 			if (keyState.D)
 			{
-				velocity = velocity + transform.CalcRight();
+				velocity = velocity + transform_.CalcRight();
 			}
 
 			if (keyState.LeftShift)velocity = velocity * 3.0f;
 
-			transform.AddPosition(velocity * elapsedTime);
+			transform_.AddPosition(velocity * debugCameraMoveSpeed_ * elapsedTime);
 		}
 	}
 
 	DirectX::XMMATRIX Camera::CalcViewMatrix() const
     {
-		DirectX::XMFLOAT3 forward = transform.CalcForward();
+		DirectX::XMFLOAT3 forward = transform_.CalcForward();
 
 		/*-----------------------------éãì_ê›íË-------------------------------------*/
 		DirectX::XMVECTOR Eye;
 
 		DirectX::XMFLOAT4 eye
 		{
-			transform.GetPosition().x,
-			transform.GetPosition().y,
-			transform.GetPosition().z,
+			transform_.GetPosition().x,
+			transform_.GetPosition().y,
+			transform_.GetPosition().z,
 			1.0f
 		};
 		
@@ -138,10 +141,10 @@ namespace Regal::Game
     DirectX::XMMATRIX Camera::CalcProjectionMatrix() const
     {
         return DirectX::XMMatrixPerspectiveFovLH(
-			DirectX::XMConvertToRadians(parameters.fov), 
-			parameters.aspectRatio, 
-			parameters.nearZ, 
-			parameters.farZ
+			DirectX::XMConvertToRadians(parameters_.fov_), 
+			parameters_.aspectRatio_, 
+			parameters_.nearZ_, 
+			parameters_.farZ_
 		);
     }
 
@@ -150,15 +153,22 @@ namespace Regal::Game
 	{
 		if (ImGui::BeginMenu("Camera"))
 		{
-			ImGui::SliderFloat("Fov", &parameters.fov,1.0f,110.0f);
-			ImGui::DragFloat("NearZ", &parameters.nearZ, 1.0f,0.1f);
-			ImGui::DragFloat("FarZ", &parameters.farZ, 1.0f,0.1f);
+			if (ImGui::TreeNode("Debug Movement"))
+			{
+				ImGui::DragFloat("MoveSpeed",&debugCameraMoveSpeed_,0.1f,0.01f);
 
-			transform.DrawDebugPosAndRotOnly();
+				ImGui::TreePop();
+			}
 
-			ImGui::InputFloat("Width",&parameters.width);
-			ImGui::InputFloat("Height",&parameters.height);
-			ImGui::InputFloat("AspectRatio",&parameters.aspectRatio);
+			ImGui::SliderFloat("Fov", &parameters_.fov_,1.0f,110.0f);
+			ImGui::DragFloat("NearZ", &parameters_.nearZ_, 1.0f,0.1f);
+			ImGui::DragFloat("FarZ", &parameters_.farZ_, 1.0f,0.1f);
+
+			transform_.DrawDebugPosAndRotOnly();
+
+			ImGui::InputFloat("Width",&parameters_.width_);
+			ImGui::InputFloat("Height",&parameters_.height_);
+			ImGui::InputFloat("AspectRatio",&parameters_.aspectRatio_);
 
 			ImGui::EndMenu();
 		}

@@ -154,3 +154,28 @@ inline DirectX::XMFLOAT4 Absolute(const DirectX::XMFLOAT4& f)
 	ret.w = fabsf(f.w);
 	return ret;
 }
+
+inline DirectX::XMFLOAT3 Cross(const DirectX::XMFLOAT3& f1, const DirectX::XMFLOAT3& f2)
+{
+	DirectX::XMFLOAT3 cross{};
+	DirectX::XMVECTOR v1 = DirectX::XMLoadFloat3(&f1);
+	DirectX::XMVECTOR v2 = DirectX::XMLoadFloat3(&f2);
+	DirectX::XMStoreFloat3(&cross, DirectX::XMVector3Cross(v1, v2));
+	return cross;
+}
+
+inline DirectX::XMFLOAT3 Dot(const DirectX::XMFLOAT3& f1, const DirectX::XMFLOAT3& f2)
+{
+	DirectX::XMFLOAT3 dot{};
+	DirectX::XMVECTOR v1 = DirectX::XMLoadFloat3(&f1);
+	DirectX::XMVECTOR v2 = DirectX::XMLoadFloat3(&f2);
+	DirectX::XMStoreFloat3(&dot, DirectX::XMVector3Dot(v1, v2));
+	return dot;
+}
+
+//inline DirectX::XMFLOAT3 FindLookAtRotation(const DirectX::XMFLOAT3& f1, const DirectX::XMFLOAT3& f2
+//{
+//	DirectX::XMFLOAT3 rotation = {
+//
+//	};
+//}
