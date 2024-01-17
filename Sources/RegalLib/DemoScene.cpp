@@ -171,11 +171,11 @@ namespace Regal::Demo
 
 		//ƒuƒ‹[ƒ€
 		{
-			bloomer->Make(immediateContext, framebuffer->shaderResourceViews[0].Get());
+			bloomer->Make(immediateContext, framebuffer->shaderResourceViews_[0].Get());
 			graphics.SetStates(Graphics::ZT_OFF_ZW_OFF, Graphics::CULL_NONE, Graphics::ALPHA);
 			ID3D11ShaderResourceView* shaderResourceViews[] =
 			{
-				framebuffer->shaderResourceViews[0].Get(),
+				framebuffer->shaderResourceViews_[0].Get(),
 				bloomer->ShaderResourceView(),
 			};
 			bitBlockTransfer->Bilt(immediateContext, shaderResourceViews, 0, 2, LEPixelShader.Get());

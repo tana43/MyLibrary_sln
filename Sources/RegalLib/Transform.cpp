@@ -9,10 +9,10 @@ namespace Regal::Game
         ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
         if (ImGui::TreeNode("Transform"))
         {
-            ImGui::DragFloat3("Position", &position.x, 0.1f, -FLT_MAX, FLT_MAX);
-            ImGui::DragFloat3("Scale", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
-            ImGui::DragFloat3("Rotation", &rotation.x, 0.01f, -FLT_MAX, FLT_MAX);
-            ImGui::DragFloat("ScaleFactor", &scaleFactor, 0.01f, 0.01f, 100.0f);
+            ImGui::DragFloat3("Position", &position_.x, 0.1f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat3("Scale", &scale_.x, 0.01f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat3("Rotation", &rotation_.x, 0.01f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat("ScaleFactor", &scaleFactor_, 0.01f, 0.01f, 100.0f);
 
             /*ImGui::SetCursorPos(ImVec2(0, 0));
             if (ImGui::Button("Reset Position", ImVec2(100, 100)))
@@ -37,42 +37,42 @@ namespace Regal::Game
         ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
         if (ImGui::TreeNode("Transform"))
         {
-            ImGui::DragFloat3("Position", &position.x, 0.1f, -FLT_MAX, FLT_MAX);
-            ImGui::DragFloat3("Rotation", &rotation.x, 0.01f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat3("Position", &position_.x, 0.1f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat3("Rotation", &rotation_.x, 0.01f, -FLT_MAX, FLT_MAX);
             ImGui::TreePop();
         }
     }
 
     void Transform::Reset()
     {
-        position = DirectX::XMFLOAT3(0, 0, 0);
-        scale = DirectX::XMFLOAT3(1, 1, 1);
-        rotation = DirectX::XMFLOAT3(0, 0, 0);
-        scaleFactor = 1.0f;
+        position_ = DirectX::XMFLOAT3(0, 0, 0);
+        scale_ = DirectX::XMFLOAT3(1, 1, 1);
+        rotation_ = DirectX::XMFLOAT3(0, 0, 0);
+        scaleFactor_ = 1.0f;
     }
 
     DirectX::XMMATRIX Transform::CalcWorldMatrix()
     {
         //スケール
         const DirectX::XMMATRIX S{DirectX::XMMatrixScaling(
-            scale.x* scaleFactor, scale.y* scaleFactor, scale.z* scaleFactor)};
+            scale_.x* scaleFactor_, scale_.y* scaleFactor_, scale_.z* scaleFactor_)};
 
         //回転
         //継承先のクラスで回転行列作成の関数を定義する(オイラー、クォータニオンそれぞれに対応するため)
         const DirectX::XMMATRIX R{MatrixRotation()};
 
         //座標
-        const DirectX::XMMATRIX T{DirectX::XMMatrixTranslation(position.x, position.y, position.z)};
+        const DirectX::XMMATRIX T{DirectX::XMMatrixTranslation(position_.x, position_.y, position_.z)};
 
         //座標系に合わせた変換
-        const DirectX::XMMATRIX C{DirectX::XMLoadFloat4x4(&coordinateSystemTransforms[coordinateSystem])};
+        const DirectX::XMMATRIX C{DirectX::XMLoadFloat4x4(&coordinateSystemTransforms_[coordinateSystem_])};
 
         return S * R * T * C;
     }
 
     DirectX::XMFLOAT3 Transform::CalcForward() const
     {
-        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)};
+        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationRollPitchYaw(rotation_.x, rotation_.y, rotation_.z)};
         DirectX::XMFLOAT3 ret{};
         DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Normalize(rotationMatrix.r[2]));
         return ret;
@@ -80,7 +80,7 @@ namespace Regal::Game
 
     DirectX::XMFLOAT3 Transform::CalcUp() const
     {
-        DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+        DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(rotation_.x, rotation_.y, rotation_.z);
         DirectX::XMFLOAT3 ret{};
         DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Normalize(rotationMatrix.r[1]));
         return ret;
@@ -88,7 +88,7 @@ namespace Regal::Game
 
     DirectX::XMFLOAT3 Transform::CalcRight() const
     {
-        DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+        DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYaw(rotation_.x, rotation_.y, rotation_.z);
         DirectX::XMFLOAT3 ret{};
         DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Normalize(rotationMatrix.r[0]));
         return ret;
@@ -98,11 +98,11 @@ namespace Regal::Game
     {
         bool changed = false;
 
-        if (ImGui::BeginCombo("Coordinate System", coordinateSystemName[coordinateSystem].c_str())) {
+        if (ImGui::BeginCombo("Coordinate System", coordinateSystemName_[coordinateSystem_].c_str())) {
             for (int n = 0; n < MAX_COORDINATE_SYSTEM; n++) {
-                bool isSelected = (coordinateSystem == n);
-                if (ImGui::Selectable(coordinateSystemName[n].c_str(), isSelected)) {
-                    coordinateSystem = n;
+                bool isSelected = (coordinateSystem_ == n);
+                if (ImGui::Selectable(coordinateSystemName_[n].c_str(), isSelected)) {
+                    coordinateSystem_ = n;
                     changed = true;
                 }
                 if (isSelected) {
@@ -121,20 +121,20 @@ namespace Regal::Game
 
     DirectX::XMMATRIX TransformEuler::MatrixRotation()
     {
-        return DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
+        return DirectX::XMMatrixRotationRollPitchYaw(rotation_.x, rotation_.y, rotation_.z);
     }
 
     TransformQuaternion::TransformQuaternion(const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& scale, const DirectX::XMFLOAT3& rotation, float scaleFactor, int coordinateSystem)
         : Transform(position, scale, rotation, scaleFactor, coordinateSystem)
     {
         DirectX::XMFLOAT3 n(0, 1, 0);
-        angle = DirectX::XMConvertToRadians(0);
+        angle_ = DirectX::XMConvertToRadians(0);
 
-        orientation = {
-            n.x * sinf(angle / 2.0f),
-            n.y * sinf(angle / 2.0f),
-            n.z * sinf(angle / 2.0f),
-            cosf(angle / 2.0f)
+        orientation_ = {
+            n.x * sinf(angle_ / 2.0f),
+            n.y * sinf(angle_ / 2.0f),
+            n.z * sinf(angle_ / 2.0f),
+            cosf(angle_ / 2.0f)
         };
     }
 
@@ -143,11 +143,11 @@ namespace Regal::Game
         ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
         if (ImGui::TreeNode("Transform"))
         {
-            ImGui::DragFloat3("Position", &position.x, 0.1f, -FLT_MAX, FLT_MAX);
-            ImGui::DragFloat3("Scale", &scale.x, 0.01f, -FLT_MAX, FLT_MAX);
-            ImGui::DragFloat3("Rotation", &rotation.x, 0.01f, -FLT_MAX, FLT_MAX);
-            ImGui::DragFloat("ScaleFactor", &scaleFactor, 0.01f, 0.01f, 100.0f);
-            ImGui::SliderAngle("Angle", &angle);
+            ImGui::DragFloat3("Position", &position_.x, 0.1f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat3("Scale", &scale_.x, 0.01f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat3("Rotation", &rotation_.x, 0.01f, -FLT_MAX, FLT_MAX);
+            ImGui::DragFloat("ScaleFactor", &scaleFactor_, 0.01f, 0.01f, 100.0f);
+            ImGui::SliderAngle("Angle", &angle_);
             /*ImGui::SetCursorPos(ImVec2(0, 0));
             if (ImGui::Button("Reset Position", ImVec2(100, 100)))
             {
@@ -168,7 +168,7 @@ namespace Regal::Game
 
     DirectX::XMFLOAT3 TransformQuaternion::CalcForward() const
     {
-        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&orientation))};
+        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&orientation_))};
         DirectX::XMFLOAT3 ret{};
         DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Normalize(rotationMatrix.r[2]));
         return ret;
@@ -176,7 +176,7 @@ namespace Regal::Game
 
     DirectX::XMFLOAT3 TransformQuaternion::CalcUp() const
     {
-        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&orientation))};
+        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&orientation_))};
         DirectX::XMFLOAT3 ret{};
         DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Normalize(rotationMatrix.r[1]));
         return ret;
@@ -184,7 +184,7 @@ namespace Regal::Game
 
     DirectX::XMFLOAT3 TransformQuaternion::CalcRight() const
     {
-        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&orientation))};
+        DirectX::XMMATRIX rotationMatrix{DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&orientation_))};
         DirectX::XMFLOAT3 ret{};
         DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Normalize(rotationMatrix.r[0]));
         return ret;
@@ -201,11 +201,11 @@ namespace Regal::Game
 
     DirectX::XMMATRIX TransformQuaternion::MatrixRotation()
     {
-        DirectX::XMVECTOR orientationVec{DirectX::XMLoadFloat4(&orientation)};
+        DirectX::XMVECTOR orientationVec{DirectX::XMLoadFloat4(&orientation_)};
 
-        float roll{ normalizeAngle(rotation.z) };
-        float pitch{ normalizeAngle(rotation.x) };
-        float yaw{ normalizeAngle(rotation.y) };
+        float roll{ normalizeAngle(rotation_.z) };
+        float pitch{ normalizeAngle(rotation_.x) };
+        float yaw{ normalizeAngle(rotation_.y) };
 
         /*DirectX::XMVECTOR rot{DirectX::XMQuaternionRotationRollPitchYaw(pitch, yaw, roll)};
         orientationVec = DirectX::XMQuaternionMultiply(orientationVec, rot);*/

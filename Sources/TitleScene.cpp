@@ -10,17 +10,17 @@ void TitleScene::CreateResource()
 	bitBlockTransfer_ = std::make_unique < Regal::Graphics::FullscreenQuad>(graphics.GetDevice());
 
 
-	Regal::Resource::Shader::CreatePSFromCso(graphics.GetDevice(), "./Resources/Shader/LuminanceExtractionPS.cso", LEPixelShader.GetAddressOf());
+	Regal::Resource::Shader::CreatePSFromCso(graphics.GetDevice(), "./Resources/Shader/LuminanceExtractionPS.cso", LEPixelShader_.GetAddressOf());
 
 	bloomer_ = std::make_unique<Regal::Graphics::Bloom>(graphics.GetDevice(), graphics.GetScreenWidth(), graphics.GetScreenHeight());
-	Regal::Resource::Shader::CreatePSFromCso(graphics.GetDevice(), "./Resources/Shader/FinalPassPS.cso", LEPixelShader.ReleaseAndGetAddressOf());
+	Regal::Resource::Shader::CreatePSFromCso(graphics.GetDevice(), "./Resources/Shader/FinalPassPS.cso", LEPixelShader_.ReleaseAndGetAddressOf());
 
-	sprite = std::make_unique<Regal::Resource::Sprite>(graphics.GetDevice(), L"./Resources/Images/Title.png");
+	sprite_ = std::make_unique<Regal::Resource::Sprite>(graphics.GetDevice(), L"./Resources/Images/Title.png");
 }
 
 void TitleScene::Initialize()
 {
-	sprite->SetColor(1, 1, 1, 0.01f);
+	sprite_->SetColor(1, 1, 1, 0.01f);
 }
 
 void TitleScene::Finalize()
@@ -59,7 +59,7 @@ void TitleScene::Render(const float& elapsedTime)
 	{
 		graphics.Set2DStates();
 
-		sprite->Render();
+		sprite_->Render();
 		/*sprite->Render(graphics.GetDeviceContext(),0,0,
 			graphics.GetScreenWidth(),graphics.GetScreenHeight(),0);*/
 	}
@@ -79,14 +79,14 @@ void TitleScene::Render(const float& elapsedTime)
 
 	//ƒuƒ‹[ƒ€
 	{
-		bloomer_->Make(immediateContext, framebuffer_->shaderResourceViews[0].Get());
+		bloomer_->Make(immediateContext, framebuffer_->shaderResourceViews_[0].Get());
 		graphics.SetStates(Graphics::ZT_OFF_ZW_OFF, Graphics::CULL_NONE, Graphics::ALPHA);
 		ID3D11ShaderResourceView* shaderResourceViews[] =
 		{
-			framebuffer_->shaderResourceViews[0].Get(),
+			framebuffer_->shaderResourceViews_[0].Get(),
 			bloomer_->ShaderResourceView(),
 		};
-		bitBlockTransfer_->Bilt(immediateContext, shaderResourceViews, 0, 2, LEPixelShader.Get());
+		bitBlockTransfer_->Bilt(immediateContext, shaderResourceViews, 0, 2, LEPixelShader_.Get());
 	}
 }
 
@@ -100,7 +100,7 @@ void TitleScene::DrawDebug()
 	}
 
 
-	sprite->DrawDebug();
+	sprite_->DrawDebug();
 }
 
 void TitleScene::PostEffectDrawDebug()

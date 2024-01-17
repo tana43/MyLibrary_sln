@@ -32,7 +32,7 @@ namespace Regal::Graphics
         renderTargetViewDesc.Format = texture2dDesc.Format;
         renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
         hr = device->CreateRenderTargetView(renderTargetBuffer.Get(), &renderTargetViewDesc,
-            renderTargetView.GetAddressOf());
+            renderTargetView_.GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
         D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc{};
@@ -40,7 +40,7 @@ namespace Regal::Graphics
         shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         shaderResourceViewDesc.Texture2D.MipLevels = 1;
         hr = device->CreateShaderResourceView(renderTargetBuffer.Get(), &shaderResourceViewDesc,
-            shaderResourceViews[0].GetAddressOf());
+            shaderResourceViews_[0].GetAddressOf());
         _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
         if (useDepth)
@@ -56,31 +56,31 @@ namespace Regal::Graphics
             depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
             depthStencilViewDesc.Flags = 0;
             hr = device->CreateDepthStencilView(depthStencilBuffer.Get(), &depthStencilViewDesc,
-                depthStencilView.GetAddressOf());
+                depthStencilView_.GetAddressOf());
             _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
             shaderResourceViewDesc.Format = useStencil ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : DXGI_FORMAT_R32_FLOAT;
             shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
             hr = device->CreateShaderResourceView(depthStencilBuffer.Get(), &shaderResourceViewDesc,
-                shaderResourceViews[1].GetAddressOf());
+                shaderResourceViews_[1].GetAddressOf());
             _ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
         }
 
-        viewport.Width = static_cast<float>(width);
-        viewport.Height = static_cast<float>(height);
-        viewport.MinDepth = 0.0f;
-        viewport.MaxDepth = 1.0f;
-        viewport.TopLeftX = 0.0f;
-        viewport.TopLeftY = 0.0f;
+        viewport_.Width = static_cast<float>(width);
+        viewport_.Height = static_cast<float>(height);
+        viewport_.MinDepth = 0.0f;
+        viewport_.MaxDepth = 1.0f;
+        viewport_.TopLeftX = 0.0f;
+        viewport_.TopLeftY = 0.0f;
     }
 
     void Framebuffer::Clear(ID3D11DeviceContext* immediateContext, float r, float g, float b, float a, float depth)
     {
         float color[4]{ r,g,b,a };
-        immediateContext->ClearRenderTargetView(renderTargetView.Get(), color);
-        if (depthStencilView)
+        immediateContext->ClearRenderTargetView(renderTargetView_.Get(), color);
+        if (depthStencilView_)
         {
-            immediateContext->ClearDepthStencilView(depthStencilView.Get(), D3D11_CLEAR_DEPTH, depth, 0);
+            immediateContext->ClearDepthStencilView(depthStencilView_.Get(), D3D11_CLEAR_DEPTH, depth, 0);
         }
     }
 
@@ -88,18 +88,18 @@ namespace Regal::Graphics
     {
         viewportCount = D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE;
         immediateContext->RSGetViewports(&viewportCount, cachedViewports);
-        immediateContext->OMGetRenderTargets(1, cachedRenderTargetView.ReleaseAndGetAddressOf(),
-            cachedDepthStencilView.ReleaseAndGetAddressOf());
+        immediateContext->OMGetRenderTargets(1, cachedRenderTargetView_.ReleaseAndGetAddressOf(),
+            cachedDepthStencilView_.ReleaseAndGetAddressOf());
 
-        immediateContext->RSSetViewports(1, &viewport);
-        immediateContext->OMSetRenderTargets(1, renderTargetView.GetAddressOf(),
-            depthStencilView.Get());
+        immediateContext->RSSetViewports(1, &viewport_);
+        immediateContext->OMSetRenderTargets(1, renderTargetView_.GetAddressOf(),
+            depthStencilView_.Get());
     }
 
     void Framebuffer::Deactivate(ID3D11DeviceContext* immediateContext)
     {
         immediateContext->RSSetViewports(viewportCount, cachedViewports);
-        immediateContext->OMSetRenderTargets(1, cachedRenderTargetView.GetAddressOf(),
-            cachedDepthStencilView.Get());
+        immediateContext->OMSetRenderTargets(1, cachedRenderTargetView_.GetAddressOf(),
+            cachedDepthStencilView_.Get());
     }
 }

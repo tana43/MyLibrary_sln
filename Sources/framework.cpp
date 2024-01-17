@@ -176,8 +176,8 @@ void Framework::Render(float elapsedTime/*Elapsed seconds from last frame*/)
 
 	IMGUI_CTRL_DISPLAY();
 
-	UINT syncInterval{ graphics.vsync ? 1U : 0U };
-	UINT flags = (graphics.tearingSupported && !graphics.fullscreenMode && !graphics.vsync) ? DXGI_PRESENT_ALLOW_TEARING : 0;
+	UINT syncInterval{ graphics.vsync_ ? 1U : 0U };
+	UINT flags = (graphics.tearingSupported_ && !graphics.fullscreenMode_ && !graphics.vsync_) ? DXGI_PRESENT_ALLOW_TEARING : 0;
 	hr = graphics.GetSwapChain()->Present(syncInterval, flags);
 	_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 }

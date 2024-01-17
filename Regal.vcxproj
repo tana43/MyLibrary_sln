@@ -219,6 +219,7 @@
     <ClCompile Include="Sources\Main.cpp" />
     <ClCompile Include="Sources\RegalLib\Bloom.cpp" />
     <ClCompile Include="Sources\RegalLib\Camera.cpp" />
+    <ClCompile Include="Sources\RegalLib\Collision.cpp" />
     <ClCompile Include="Sources\RegalLib\DemoScene.cpp" />
     <ClCompile Include="Sources\RegalLib\Framebuffer.cpp" />
     <ClCompile Include="Sources\RegalLib\FullscreenQuad.cpp" />
@@ -258,6 +259,8 @@
     <ClInclude Include="Sources\RegalLib\BaseScene.h" />
     <ClInclude Include="Sources\RegalLib\Bloom.h" />
     <ClInclude Include="Sources\RegalLib\Camera.h" />
+    <ClInclude Include="Sources\RegalLib\Collision.h" />
+    <ClInclude Include="Sources\RegalLib\ConstantBuffer.h" />
     <ClInclude Include="Sources\RegalLib\DemoScene.h" />
     <ClInclude Include="Sources\RegalLib\Easing.h" />
     <ClInclude Include="Sources\RegalLib\Framebuffer.h" />

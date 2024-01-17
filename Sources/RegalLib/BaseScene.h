@@ -27,18 +27,18 @@ namespace Regal::Scene
 
     public:
         // €”õŠ®—¹‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
-        bool IsReady()const { return ready; }
+        bool IsReady()const { return ready_; }
 
         // €”õŠ®—¹
-        void SetReady() { ready = true; }
+        void SetReady() { ready_ = true; }
 
         // ¡‚Ç‚ÌƒV[ƒ“‚È‚Ì‚©”»’è‚Å‚«‚é‚æ‚¤‚É‚·‚éˆ×‚Ì‚à‚Ì
-        void SetSceneType(int type) { sceneType = type; }
-        int GetSceneType() { return sceneType; }
+        void SetSceneType(int type) { sceneType_ = type; }
+        int GetSceneType() { return sceneType_; }
 
     private:
-        bool ready = false;
+        bool ready_ = false;
 
-        int sceneType = SCENE_TYPE::TITLE;
+        int sceneType_ = SCENE_TYPE::TITLE;
     };
 }

@@ -120,21 +120,17 @@ inline DirectX::XMFLOAT4 Min(const DirectX::XMFLOAT4& f1, const DirectX::XMFLOAT
 	return ret;
 }
 
-inline float Length(const DirectX::XMFLOAT3& f1, const DirectX::XMFLOAT3& f2)
-{
-	float ret{};
-	DirectX::XMStoreFloat(
-		&ret,
-		DirectX::XMVector3Length(
-			DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&f1),
-				DirectX::XMLoadFloat3(&f2))));
-	return ret;
-}
-
 inline float Length(const DirectX::XMFLOAT3& f)
 {
 	float ret;
 	DirectX::XMStoreFloat(&ret, DirectX::XMVector3Length(DirectX::XMLoadFloat3(&f)));
+	return ret;
+}
+
+inline float LengthSq(const DirectX::XMFLOAT3& f)
+{
+	float ret;
+	DirectX::XMStoreFloat(&ret, DirectX::XMVector3LengthSq(DirectX::XMLoadFloat3(&f)));
 	return ret;
 }
 
@@ -164,12 +160,12 @@ inline DirectX::XMFLOAT3 Cross(const DirectX::XMFLOAT3& f1, const DirectX::XMFLO
 	return cross;
 }
 
-inline DirectX::XMFLOAT3 Dot(const DirectX::XMFLOAT3& f1, const DirectX::XMFLOAT3& f2)
+inline float Dot(const DirectX::XMFLOAT3& f1, const DirectX::XMFLOAT3& f2)
 {
-	DirectX::XMFLOAT3 dot{};
+	float dot{};
 	DirectX::XMVECTOR v1 = DirectX::XMLoadFloat3(&f1);
 	DirectX::XMVECTOR v2 = DirectX::XMLoadFloat3(&f2);
-	DirectX::XMStoreFloat3(&dot, DirectX::XMVector3Dot(v1, v2));
+	dot = DirectX::XMVectorGetX(DirectX::XMVector3Dot(v1, v2));
 	return dot;
 }
 

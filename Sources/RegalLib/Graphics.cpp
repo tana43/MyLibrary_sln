@@ -40,18 +40,18 @@ void AcquireHighPerformanceAdapter(IDXGIFactory6* dxgiFactory6, IDXGIAdapter3** 
 
 namespace Regal::Graphics
 {
-	Graphics* Graphics::instance = nullptr;
+	Graphics* Graphics::instance_ = nullptr;
 
     Graphics::Graphics(HWND hwnd, BOOL fullscreen):
-		hwnd(hwnd),
-		fullscreenMode(fullscreen),
-		windowedStyle(static_cast<DWORD>(GetWindowLongPtrW(hwnd, GWL_STYLE)))
+		hwnd_(hwnd),
+		fullscreenMode_(fullscreen),
+		windowedStyle_(static_cast<DWORD>(GetWindowLongPtrW(hwnd, GWL_STYLE)))
     {
 		//標準か福井先生のフルスクリーン切り替え
 #if FULLSCREEN_VARSION
 		//インスタンス設定
-		_ASSERT_EXPR(instance == nullptr, "already instantiated");
-		instance = this;
+		_ASSERT_EXPR(instance_ == nullptr, "already instantiated");
+		instance_ = this;
 
 		if (fullscreen)
 		{
@@ -61,8 +61,8 @@ namespace Regal::Graphics
 		//画面サイズ取得
 		RECT clientRect;
 		GetClientRect(hwnd, &clientRect);
-		framebufferDimensions.cx = clientRect.right - clientRect.left;
-		framebufferDimensions.cy = clientRect.bottom - clientRect.top;
+		framebufferDimensions_.cx = clientRect.right - clientRect.left;
+		framebufferDimensions_.cy = clientRect.bottom - clientRect.top;
 
 		HRESULT hr{ S_OK };
 
@@ -77,7 +77,7 @@ namespace Regal::Graphics
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 		//アダプター最適化（搭載GPUに対応、よー分からん）
-		AcquireHighPerformanceAdapter(dxgiFactory6.Get(), adapter.GetAddressOf());
+		AcquireHighPerformanceAdapter(dxgiFactory6.Get(), adapter_.GetAddressOf());
 
 		UINT createDeviceFlags{ 0 };
 #ifdef _DEBUG
@@ -92,9 +92,9 @@ namespace Regal::Graphics
 		};
 		D3D_FEATURE_LEVEL featureLevel;
 		hr = D3D11CreateDevice(
-			adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, 0,
+			adapter_.Get(), D3D_DRIVER_TYPE_UNKNOWN, 0,
 			createDeviceFlags, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION,
-			device.ReleaseAndGetAddressOf(), &featureLevel, immediateContext.ReleaseAndGetAddressOf()
+			device_.ReleaseAndGetAddressOf(), &featureLevel, immediateContext_.ReleaseAndGetAddressOf()
 		);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		_ASSERT_EXPR(!(featureLevel < D3D_FEATURE_LEVEL_11_0), L"Direct3D Feature Level 11 unsupported.");
@@ -103,7 +103,7 @@ namespace Regal::Graphics
 		hr = D3D11CreateDevice(
 			adapter.Get(), D3D_DRIVER_TYPE_UNKNOWN, 0,
 			createDeviceFlags, &featureLevels, 1, D3D11_SDK_VERSION,
-			device.ReleaseAndGetAddressOf(), NULL, immediateContext.ReleaseAndGetAddressOf()
+			device.ReleaseAndGetAddressOf(), NULL, immediateContext_.ReleaseAndGetAddressOf()
 		);
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 #endif // 1
@@ -134,7 +134,7 @@ namespace Regal::Graphics
 		swapChainDesc.Windowed = !fullscreen;
 		hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags,
 		&featureLevels, 1, D3D11_SDK_VERSION, &swapChainDesc,
-		swapChain.GetAddressOf(), device.GetAddressOf(), NULL, immediateContext.GetAddressOf());
+		swapChain.GetAddressOf(), device.GetAddressOf(), NULL, immediateContext_.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer{};
@@ -175,14 +175,14 @@ namespace Regal::Graphics
 		viewport.Height = static_cast<float>(framebufferDimensions.cy);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
-		immediateContext->RSSetViewports(1, &viewport);
+		immediateContext_->RSSetViewports(1, &viewport);
 
 		swapChain->SetFullscreenState(fullscreen, 0);
 #endif // 0
 
 		//シェーダー
 		{
-			shader = std::make_unique<Regal::Resource::Shader>();
+			shader_ = std::make_unique<Regal::Resource::Shader>();
 		}
 
 		CreateStates();
@@ -197,29 +197,29 @@ namespace Regal::Graphics
 #if FULLSCREEN_VARSION
 		HRESULT hr{ S_OK };
 
-		if (swapChain)
+		if (swapChain_)
 		{
 			//ウィンドウサイズ変更処理
 			ID3D11RenderTargetView* nullRenderTargetView{};
-			immediateContext->OMSetRenderTargets(1, &nullRenderTargetView, NULL);
-			renderTargetView.Reset();
+			immediateContext_->OMSetRenderTargets(1, &nullRenderTargetView, NULL);
+			renderTargetView_.Reset();
 
 			DXGI_SWAP_CHAIN_DESC swapChainDesc{};
-			swapChain->GetDesc(&swapChainDesc);
-			hr = swapChain->ResizeBuffers(
+			swapChain_->GetDesc(&swapChainDesc);
+			hr = swapChain_->ResizeBuffers(
 				swapChainDesc.BufferCount,
-				framebufferDimensions.cx, framebufferDimensions.cy,
+				framebufferDimensions_.cx, framebufferDimensions_.cy,
 				swapChainDesc.BufferDesc.Format, swapChainDesc.Flags
 			);
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			Microsoft::WRL::ComPtr<ID3D11Texture2D> renderTargetBuffer;
-			hr = swapChain->GetBuffer(0, IID_PPV_ARGS(renderTargetBuffer.GetAddressOf()));
+			hr = swapChain_->GetBuffer(0, IID_PPV_ARGS(renderTargetBuffer.GetAddressOf()));
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 			D3D11_TEXTURE2D_DESC texture2dDesc;
 			renderTargetBuffer->GetDesc(&texture2dDesc);
 
-			hr = device->CreateRenderTargetView(renderTargetBuffer.Get(), NULL, renderTargetView.ReleaseAndGetAddressOf());
+			hr = device_->CreateRenderTargetView(renderTargetBuffer.Get(), NULL, renderTargetView_.ReleaseAndGetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 		else
@@ -229,11 +229,11 @@ namespace Regal::Graphics
 			{
 				hr = dxgiFactory6->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
 			}
-			tearingSupported = SUCCEEDED(hr) && allowTearing;
+			tearingSupported_ = SUCCEEDED(hr) && allowTearing;
 
 			DXGI_SWAP_CHAIN_DESC1 swapChainDesk1{};
-			swapChainDesk1.Width = framebufferDimensions.cx;
-			swapChainDesk1.Height = framebufferDimensions.cy;
+			swapChainDesk1.Width = framebufferDimensions_.cx;
+			swapChainDesk1.Height = framebufferDimensions_.cy;
 			swapChainDesk1.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			swapChainDesk1.Stereo = FALSE;
 			swapChainDesk1.SampleDesc.Count = 1;
@@ -243,26 +243,26 @@ namespace Regal::Graphics
 			swapChainDesk1.Scaling = DXGI_SCALING_STRETCH;
 			swapChainDesk1.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 			swapChainDesk1.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-			swapChainDesk1.Flags = tearingSupported ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
-			hr = dxgiFactory6->CreateSwapChainForHwnd(device.Get(), hwnd, &swapChainDesk1, nullptr, nullptr, swapChain.GetAddressOf());
+			swapChainDesk1.Flags = tearingSupported_ ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+			hr = dxgiFactory6->CreateSwapChainForHwnd(device_.Get(), hwnd_, &swapChainDesk1, nullptr, nullptr, swapChain_.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			//標準のフルスクリーン入力 alt+enter を無効にしている
-			hr = dxgiFactory6->MakeWindowAssociation(hwnd, DXGI_MWA_NO_ALT_ENTER);
+			hr = dxgiFactory6->MakeWindowAssociation(hwnd_, DXGI_MWA_NO_ALT_ENTER);
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			Microsoft::WRL::ComPtr<ID3D11Texture2D> backBuffer{};
-			hr = swapChain->GetBuffer(0,
+			hr = swapChain_->GetBuffer(0,
 				IID_PPV_ARGS(backBuffer.GetAddressOf()));
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
-			hr = device->CreateRenderTargetView(backBuffer.Get(), nullptr, renderTargetView.ReleaseAndGetAddressOf());
+			hr = device_->CreateRenderTargetView(backBuffer.Get(), nullptr, renderTargetView_.ReleaseAndGetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilBuffer{};
 		D3D11_TEXTURE2D_DESC texture2dDesc{};
-		texture2dDesc.Width = framebufferDimensions.cx;
-		texture2dDesc.Height = framebufferDimensions.cy;
+		texture2dDesc.Width = framebufferDimensions_.cx;
+		texture2dDesc.Height = framebufferDimensions_.cy;
 		texture2dDesc.MipLevels = 1;
 		texture2dDesc.ArraySize = 1;
 		texture2dDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -272,7 +272,7 @@ namespace Regal::Graphics
 		texture2dDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 		texture2dDesc.CPUAccessFlags = 0;
 		texture2dDesc.MiscFlags = 0;
-		hr = device->CreateTexture2D(&texture2dDesc, NULL, depthStencilBuffer.GetAddressOf());
+		hr = device_->CreateTexture2D(&texture2dDesc, NULL, depthStencilBuffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 
@@ -280,18 +280,18 @@ namespace Regal::Graphics
 		depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 		depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		depthStencilViewDesc.Texture2D.MipSlice = 0;
-		hr = device->CreateDepthStencilView(depthStencilBuffer.Get(), &depthStencilViewDesc, depthStencilView.ReleaseAndGetAddressOf());
+		hr = device_->CreateDepthStencilView(depthStencilBuffer.Get(), &depthStencilViewDesc, depthStencilView_.ReleaseAndGetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 
 		D3D11_VIEWPORT viewport{};
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
-		viewport.Width = static_cast<float>(framebufferDimensions.cx);
-		viewport.Height = static_cast<float>(framebufferDimensions.cy);
+		viewport.Width = static_cast<float>(framebufferDimensions_.cx);
+		viewport.Height = static_cast<float>(framebufferDimensions_.cy);
 		viewport.MinDepth = 0.0f;
 		viewport.MaxDepth = 1.0f;
-		immediateContext->RSSetViewports(1, &viewport);
+		immediateContext_->RSSetViewports(1, &viewport);
 #endif // FULLSCREEN_VAR
 
 		
@@ -302,14 +302,14 @@ namespace Regal::Graphics
 	void Graphics::FullscreenState(BOOL fullscreen)
 	{
 #if FULLSCREEN_VARSION
-		fullscreenMode = fullscreen;
+		fullscreenMode_ = fullscreen;
 		if (fullscreen)
 		{
-			GetWindowRect(hwnd, &windowedRect);
+			GetWindowRect(hwnd_, &windowedRect_);
 
 			//ウィンドウスタイルの指定
 			SetWindowLongPtrA(
-				hwnd, GWL_STYLE,
+				hwnd_, GWL_STYLE,
 				WS_OVERLAPPEDWINDOW &
 				~(WS_CAPTION | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME)
 			);//WS_OVERLAPP...~...WS_CHICKFRAME)は WS_OVERLAPPED のこと？
@@ -329,7 +329,7 @@ namespace Regal::Graphics
 				};
 			}
 			SetWindowPos(
-				hwnd,
+				hwnd_,
 #ifdef _DEBUG
 				NULL,
 #else
@@ -342,22 +342,22 @@ namespace Regal::Graphics
 				SWP_FRAMECHANGED | SWP_NOACTIVATE
 			);
 
-			ShowWindow(hwnd, SW_MAXIMIZE);
+			ShowWindow(hwnd_, SW_MAXIMIZE);
 		}
 		else
 		{
-			SetWindowLongPtrA(hwnd, GWL_STYLE, windowedStyle);
+			SetWindowLongPtrA(hwnd_, GWL_STYLE, windowedStyle_);
 			SetWindowPos(
-				hwnd,
+				hwnd_,
 				HWND_NOTOPMOST,
-				windowedRect.left,
-				windowedRect.top,
-				windowedRect.right - windowedRect.left,
-				windowedRect.bottom - windowedRect.top,
+				windowedRect_.left,
+				windowedRect_.top,
+				windowedRect_.right - windowedRect_.left,
+				windowedRect_.bottom - windowedRect_.top,
 				SWP_FRAMECHANGED | SWP_NOACTIVATE
 			);
 
-			ShowWindow(hwnd, SW_NORMAL);
+			ShowWindow(hwnd_, SW_NORMAL);
 		}
 #endif // FULLSCREEN_VAR
 
@@ -371,13 +371,13 @@ namespace Regal::Graphics
 		if (width == 0 || height == 0)return;
 
 		HRESULT hr{ S_OK };
-		if (width != framebufferDimensions.cx || height != framebufferDimensions.cy)
+		if (width != framebufferDimensions_.cx || height != framebufferDimensions_.cy)
 		{
-			framebufferDimensions.cx = static_cast<LONG>(width);
-			framebufferDimensions.cy = height;
+			framebufferDimensions_.cx = static_cast<LONG>(width);
+			framebufferDimensions_.cy = height;
 
 			Microsoft::WRL::ComPtr<IDXGIFactory6> dxgiFactory6;
-			hr = swapChain->GetParent(IID_PPV_ARGS(dxgiFactory6.GetAddressOf()));
+			hr = swapChain_->GetParent(IID_PPV_ARGS(dxgiFactory6.GetAddressOf()));
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 			CreateSwapChain(dxgiFactory6.Get());
 		}
@@ -413,15 +413,15 @@ namespace Regal::Graphics
 		samplerDesc.BorderColor[3] = 0;
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-		hr = device->CreateSamplerState(&samplerDesc, samplerStates[0].GetAddressOf());
+		hr = device_->CreateSamplerState(&samplerDesc, samplerStates_[0].GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 		samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		hr = device->CreateSamplerState(&samplerDesc, samplerStates[1].GetAddressOf());
+		hr = device_->CreateSamplerState(&samplerDesc, samplerStates_[1].GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 		samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-		hr = device->CreateSamplerState(&samplerDesc, samplerStates[2].GetAddressOf());
+		hr = device_->CreateSamplerState(&samplerDesc, samplerStates_[2].GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 		//深度ステンシルステートオブジェクトの生成
@@ -431,28 +431,28 @@ namespace Regal::Graphics
 			depthStencilDesc.DepthEnable = TRUE;
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depthStencilDesc, depthStencilStates[0].GetAddressOf());
+			hr = device_->CreateDepthStencilState(&depthStencilDesc, depthStencilStates_[0].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			//深度テスト：オフ,深度ライト：オン
 			depthStencilDesc.DepthEnable = FALSE;
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depthStencilDesc, depthStencilStates[1].GetAddressOf());
+			hr = device_->CreateDepthStencilState(&depthStencilDesc, depthStencilStates_[1].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			//深度テスト：オン,深度ライト：オフ
 			depthStencilDesc.DepthEnable = TRUE;
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depthStencilDesc, depthStencilStates[2].GetAddressOf());
+			hr = device_->CreateDepthStencilState(&depthStencilDesc, depthStencilStates_[2].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			//深度テスト：オフ,深度ライト：オフ
 			depthStencilDesc.DepthEnable = FALSE;
 			depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 			depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-			hr = device->CreateDepthStencilState(&depthStencilDesc, depthStencilStates[3].GetAddressOf());
+			hr = device_->CreateDepthStencilState(&depthStencilDesc, depthStencilStates_[3].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 
@@ -469,7 +469,7 @@ namespace Regal::Graphics
 			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-			hr = device->CreateBlendState(&blend_desc, blendStates[static_cast<size_t>(BLEND_STATE::NONE)].GetAddressOf());
+			hr = device_->CreateBlendState(&blend_desc, blendStates_[static_cast<size_t>(BLEND_STATE::NONE)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			blend_desc.AlphaToCoverageEnable = FALSE;
@@ -482,7 +482,7 @@ namespace Regal::Graphics
 			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-			hr = device->CreateBlendState(&blend_desc, blendStates[static_cast<size_t>(BLEND_STATE::ALPHA)].GetAddressOf());
+			hr = device_->CreateBlendState(&blend_desc, blendStates_[static_cast<size_t>(BLEND_STATE::ALPHA)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			blend_desc.AlphaToCoverageEnable = FALSE;
@@ -495,7 +495,7 @@ namespace Regal::Graphics
 			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
 			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-			hr = device->CreateBlendState(&blend_desc, blendStates[static_cast<size_t>(BLEND_STATE::ADD)].GetAddressOf());
+			hr = device_->CreateBlendState(&blend_desc, blendStates_[static_cast<size_t>(BLEND_STATE::ADD)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			blend_desc.AlphaToCoverageEnable = FALSE;
@@ -508,7 +508,7 @@ namespace Regal::Graphics
 			blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
 			blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 			blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-			hr = device->CreateBlendState(&blend_desc, blendStates[static_cast<size_t>(BLEND_STATE::MULTIPLY)].GetAddressOf());
+			hr = device_->CreateBlendState(&blend_desc, blendStates_[static_cast<size_t>(BLEND_STATE::MULTIPLY)].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 
@@ -525,64 +525,64 @@ namespace Regal::Graphics
 			rasterizerDesc.ScissorEnable = FALSE;
 			rasterizerDesc.MultisampleEnable = FALSE;
 			rasterizerDesc.AntialiasedLineEnable = FALSE;
-			hr = device->CreateRasterizerState(&rasterizerDesc, rasterizerStates[0].GetAddressOf());
+			hr = device_->CreateRasterizerState(&rasterizerDesc, rasterizerStates_[0].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			//面カリングを逆向きにするステート
 			rasterizerDesc.FrontCounterClockwise = TRUE;
-			hr = device->CreateRasterizerState(&rasterizerDesc, rasterizerStates[3].GetAddressOf());
+			hr = device_->CreateRasterizerState(&rasterizerDesc, rasterizerStates_[3].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 			rasterizerDesc.CullMode = D3D11_CULL_BACK;
 			rasterizerDesc.AntialiasedLineEnable = TRUE;
-			hr = device->CreateRasterizerState(&rasterizerDesc, rasterizerStates[1].GetAddressOf());
+			hr = device_->CreateRasterizerState(&rasterizerDesc, rasterizerStates_[1].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 			rasterizerDesc.CullMode = D3D11_CULL_NONE;
 			rasterizerDesc.AntialiasedLineEnable = TRUE;
-			hr = device->CreateRasterizerState(&rasterizerDesc, rasterizerStates[2].GetAddressOf());
+			hr = device_->CreateRasterizerState(&rasterizerDesc, rasterizerStates_[2].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 
 			//面カリング無し
 			rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 			rasterizerDesc.CullMode = D3D11_CULL_NONE;
 			rasterizerDesc.AntialiasedLineEnable = TRUE;
-			hr = device->CreateRasterizerState(&rasterizerDesc, rasterizerStates[4].GetAddressOf());
+			hr = device_->CreateRasterizerState(&rasterizerDesc, rasterizerStates_[4].GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), hr_trace(hr));
 		}
 
 		//各種ステートオブジェクトセット
 		{
-			setting2DDepthStencilState = depthStencilStates[DEPTH_STATE::ZT_OFF_ZW_OFF].Get();
-			setting3DDepthStencilState = depthStencilStates[DEPTH_STATE::ZT_ON_ZW_ON].Get();
-			setting2DRasterizerState = rasterizerStates[RASTER_STATE::SOLID].Get();
-			setting3DRasterizerState = rasterizerStates[RASTER_STATE::SOLID].Get();
-			setting2DBlendState = blendStates[BLEND_STATE::ALPHA].Get();
-			setting3DBlendState = blendStates[BLEND_STATE::ALPHA].Get();
+			setting2DDepthStencilState_ = depthStencilStates_[DEPTH_STATE::ZT_OFF_ZW_OFF].Get();
+			setting3DDepthStencilState_ = depthStencilStates_[DEPTH_STATE::ZT_ON_ZW_ON].Get();
+			setting2DRasterizerState_ = rasterizerStates_[RASTER_STATE::SOLID].Get();
+			setting3DRasterizerState_ = rasterizerStates_[RASTER_STATE::SOLID].Get();
+			setting2DBlendState_ = blendStates_[BLEND_STATE::ALPHA].Get();
+			setting3DBlendState_ = blendStates_[BLEND_STATE::ALPHA].Get();
 		}
 	}
 
 	void Graphics::SetStates(int depthStencilState, int rastarizerState, int blendState)
 	{
-		immediateContext->RSSetState(rasterizerStates[rastarizerState].Get());
-		immediateContext->OMSetDepthStencilState(depthStencilStates[depthStencilState].Get(), 1);
-		immediateContext->OMSetBlendState(blendStates[blendState].Get(), nullptr, 0xFFFFFFFF);
+		immediateContext_->RSSetState(rasterizerStates_[rastarizerState].Get());
+		immediateContext_->OMSetDepthStencilState(depthStencilStates_[depthStencilState].Get(), 1);
+		immediateContext_->OMSetBlendState(blendStates_[blendState].Get(), nullptr, 0xFFFFFFFF);
 	}
 
 	void Graphics::Set2DStates()
 	{
-		immediateContext->OMSetDepthStencilState(setting2DDepthStencilState, 1);
-		immediateContext->RSSetState(setting2DRasterizerState);
-		immediateContext->OMSetBlendState(setting2DBlendState, nullptr, 0xFFFFFFFF);
+		immediateContext_->OMSetDepthStencilState(setting2DDepthStencilState_, 1);
+		immediateContext_->RSSetState(setting2DRasterizerState_);
+		immediateContext_->OMSetBlendState(setting2DBlendState_, nullptr, 0xFFFFFFFF);
 	}
 
 	void Graphics::Set3DStates()
 	{
-		immediateContext->OMSetDepthStencilState(setting3DDepthStencilState, 1);
-		immediateContext->RSSetState(setting3DRasterizerState);
-		immediateContext->OMSetBlendState(setting3DBlendState, nullptr, 0xFFFFFFFF);
+		immediateContext_->OMSetDepthStencilState(setting3DDepthStencilState_, 1);
+		immediateContext_->RSSetState(setting3DRasterizerState_);
+		immediateContext_->OMSetBlendState(setting3DBlendState_, nullptr, 0xFFFFFFFF);
 	}
 
 	void Graphics::DrawDebug()
@@ -602,22 +602,22 @@ namespace Regal::Graphics
 				{
 					if (ImGui::MenuItem("Z_Test ON  : Z_Write ON", "", selectDFlag[0]))
 					{
-						setting2DDepthStencilState = depthStencilStates[0].Get();
+						setting2DDepthStencilState_ = depthStencilStates_[0].Get();
 						selectDFlag[0] = true; selectDFlag[1] = false; selectDFlag[2] = false; selectDFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Z_Test OFF : Z_Write ON", "", selectDFlag[1]))
 					{
-						setting2DDepthStencilState = depthStencilStates[1].Get();
+						setting2DDepthStencilState_ = depthStencilStates_[1].Get();
 						selectDFlag[0] = false; selectDFlag[1] = true; selectDFlag[2] = false; selectDFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Z_Test ON  : Z_Write OFF", "", selectDFlag[2]))
 					{
-						setting2DDepthStencilState = depthStencilStates[2].Get();
+						setting2DDepthStencilState_ = depthStencilStates_[2].Get();
 						selectDFlag[0] = false; selectDFlag[1] = false; selectDFlag[2] = true; selectDFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Z_Test OFF : Z_Write OFF", "", selectDFlag[3]))
 					{
-						setting2DDepthStencilState = depthStencilStates[3].Get();
+						setting2DDepthStencilState_ = depthStencilStates_[3].Get();
 						selectDFlag[0] = false; selectDFlag[1] = false; selectDFlag[2] = false; selectDFlag[3] = true;
 					}
 
@@ -630,17 +630,17 @@ namespace Regal::Graphics
 				{
 					if (ImGui::MenuItem("Solid", "", selectRFlag[0]))
 					{
-						setting2DRasterizerState = rasterizerStates[0].Get();
+						setting2DRasterizerState_ = rasterizerStates_[0].Get();
 						selectRFlag[0] = true; selectRFlag[1] = false; selectRFlag[2] = false;
 					}
 					if (ImGui::MenuItem("Wireframe", "", selectRFlag[1]))
 					{
-						setting2DRasterizerState = rasterizerStates[1].Get();
+						setting2DRasterizerState_ = rasterizerStates_[1].Get();
 						selectRFlag[0] = false; selectRFlag[1] = true; selectRFlag[2] = false;
 					}
 					if (ImGui::MenuItem("Wireframe Culling Off", "", selectRFlag[2]))
 					{
-						setting2DRasterizerState = rasterizerStates[2].Get();
+						setting2DRasterizerState_ = rasterizerStates_[2].Get();
 						selectRFlag[0] = false; selectRFlag[1] = false; selectRFlag[2] = true;
 					}
 
@@ -656,22 +656,22 @@ namespace Regal::Graphics
 				{
 					if (ImGui::MenuItem("Z_Test ON  : Z_Write ON", "", selectDFlag[0]))
 					{
-						setting3DDepthStencilState = depthStencilStates[0].Get();
+						setting3DDepthStencilState_ = depthStencilStates_[0].Get();
 						selectDFlag[0] = true; selectDFlag[1] = false; selectDFlag[2] = false; selectDFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Z_Test OFF : Z_Write ON", "", selectDFlag[1]))
 					{
-						setting3DDepthStencilState = depthStencilStates[1].Get();
+						setting3DDepthStencilState_ = depthStencilStates_[1].Get();
 						selectDFlag[0] = false; selectDFlag[1] = true; selectDFlag[2] = false; selectDFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Z_Test ON  : Z_Write OFF", "", selectDFlag[2]))
 					{
-						setting3DDepthStencilState = depthStencilStates[2].Get();
+						setting3DDepthStencilState_ = depthStencilStates_[2].Get();
 						selectDFlag[0] = false; selectDFlag[1] = false; selectDFlag[2] = true; selectDFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Z_Test OFF : Z_Write OFF", "", selectDFlag[3]))
 					{
-						setting3DDepthStencilState = depthStencilStates[3].Get();
+						setting3DDepthStencilState_ = depthStencilStates_[3].Get();
 						selectDFlag[0] = false; selectDFlag[1] = false; selectDFlag[2] = false; selectDFlag[3] = true;
 					}
 
@@ -684,22 +684,22 @@ namespace Regal::Graphics
 				{
 					if (ImGui::MenuItem("Solid", "", selectRFlag[0]))
 					{
-						setting3DRasterizerState = rasterizerStates[0].Get();
+						setting3DRasterizerState_ = rasterizerStates_[0].Get();
 						selectRFlag[0] = true; selectRFlag[1] = false; selectRFlag[2] = false; selectRFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Wireframe", "", selectRFlag[1]))
 					{
-						setting3DRasterizerState = rasterizerStates[1].Get();
+						setting3DRasterizerState_ = rasterizerStates_[1].Get();
 						selectRFlag[0] = false; selectRFlag[1] = true; selectRFlag[2] = false; selectRFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Wireframe Culling Off", "", selectRFlag[2]))
 					{
-						setting3DRasterizerState = rasterizerStates[2].Get();
+						setting3DRasterizerState_ = rasterizerStates_[2].Get();
 						selectRFlag[0] = false; selectRFlag[1] = false; selectRFlag[2] = true; selectRFlag[3] = false;
 					}
 					if (ImGui::MenuItem("Solid Reverse", "", selectRFlag[3]))
 					{
-						setting3DRasterizerState = rasterizerStates[3].Get();
+						setting3DRasterizerState_ = rasterizerStates_[3].Get();
 						selectRFlag[0] = false; selectRFlag[1] = false; selectRFlag[2] = false; selectRFlag[3] = true;
 					}
 

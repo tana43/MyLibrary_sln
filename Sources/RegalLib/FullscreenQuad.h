@@ -12,8 +12,8 @@ namespace Regal::Graphics
         virtual ~FullscreenQuad() = default;
 
     private:
-        Microsoft::WRL::ComPtr<ID3D11VertexShader> embeddedVertexShader;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> embeddedPixelShader;
+        Microsoft::WRL::ComPtr<ID3D11VertexShader> embeddedVertexShader_;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> embeddedPixelShader_;
 
     public:
         void Bilt(ID3D11DeviceContext* immediateContextbool, ID3D11ShaderResourceView** shaderResourceView,

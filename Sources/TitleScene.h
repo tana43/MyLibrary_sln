@@ -26,8 +26,8 @@ private:
     std::unique_ptr<Regal::Graphics::FullscreenQuad> bitBlockTransfer_;
 
     //輝度成分抽出用シェーダー
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> LEPixelShader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> LEPixelShader_;
 
-    std::unique_ptr<Regal::Resource::Sprite> sprite;
+    std::unique_ptr<Regal::Resource::Sprite> sprite_;
 };
 

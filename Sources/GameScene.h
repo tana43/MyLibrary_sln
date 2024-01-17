@@ -20,14 +20,14 @@ public:
     void PostEffectDrawDebug()override;
 
 private:
-    float clearColor[4] = { 0.1f,0.1f,0.1f,1.0f };
-    std::unique_ptr<Regal::Graphics::Framebuffer> framebuffer;
-    std::unique_ptr<Regal::Graphics::Bloom> bloomer;
-    std::unique_ptr<Regal::Graphics::FullscreenQuad> bitBlockTransfer;
+    float clearColor_[4] = { 0.1f,0.1f,0.1f,1.0f };
+    std::unique_ptr<Regal::Graphics::Framebuffer> framebuffer_;
+    std::unique_ptr<Regal::Graphics::Bloom> bloomer_;
+    std::unique_ptr<Regal::Graphics::FullscreenQuad> bitBlockTransfer_;
 
     //輝度成分抽出用シェーダー
-    Microsoft::WRL::ComPtr<ID3D11PixelShader> LEPixelShader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader> LEPixelShader_;
 
-    std::unique_ptr<Regal::Resource::Sprite> sprite;
+    std::unique_ptr<Regal::Resource::Sprite> sprite_;
 };
 

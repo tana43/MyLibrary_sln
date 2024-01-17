@@ -36,34 +36,34 @@ namespace Regal::Graphics
 
 		//シングルトンだけど外部から生成する必要があるのでコンストラクタはpublic
 		//にする必要がある　キモイ
-		static Graphics& Instance() { return *instance; }
+		static Graphics& Instance() { return *instance_; }
 
 		// デバイス取得
-		ID3D11Device* GetDevice() const { return device.Get(); }
+		ID3D11Device* GetDevice() const { return device_.Get(); }
 
 		// デバイスコンテキスト取得
-		ID3D11DeviceContext* GetDeviceContext() const { return immediateContext.Get(); }
+		ID3D11DeviceContext* GetDeviceContext() const { return immediateContext_.Get(); }
 
 		// スワップチェーン取得
-		IDXGISwapChain* GetSwapChain() const { return swapChain.Get(); }
+		IDXGISwapChain* GetSwapChain() const { return swapChain_.Get(); }
 
 		// レンダーターゲットビュー取得
-		ID3D11RenderTargetView* GetRenderTargetView() const { return renderTargetView.Get(); }
+		ID3D11RenderTargetView* GetRenderTargetView() const { return renderTargetView_.Get(); }
 
 		// デプスステンシルビュー取得
-		ID3D11DepthStencilView* GetDepthStencilView() const { return depthStencilView.Get(); }
+		ID3D11DepthStencilView* GetDepthStencilView() const { return depthStencilView_.Get(); }
 
 		// シェーダー取得
-		Regal::Resource::Shader* GetShader() const { return shader.get(); }
+		Regal::Resource::Shader* GetShader() const { return shader_.get(); }
 
 		// スクリーン幅取得
-		float GetScreenWidth() const { return framebufferDimensions.cx; }
+		float GetScreenWidth() const { return framebufferDimensions_.cx; }
 
 		// スクリーン高さ取得
-		float GetScreenHeight() const { return framebufferDimensions.cy; }
+		float GetScreenHeight() const { return framebufferDimensions_.cy; }
 
-		//ミューテックス取得
-		std::mutex& GetMutex() { return mutex; }
+		//ミューテックス取得(排他制御　対象が未使用か使用中かを表す)
+		std::mutex& GetMutex() { return mutex_; }
 
 		void OnSizeChanged(UINT64 width, UINT height);
 
@@ -85,21 +85,21 @@ namespace Regal::Graphics
 		//とりあえず動くようにしたいからサンプラーステートバインド関数置いとく（後で消す）
 		void BindSamplersState()
 		{
-			immediateContext->PSSetSamplers(0, 1, samplerStates[0].GetAddressOf());
-			immediateContext->PSSetSamplers(1, 1, samplerStates[1].GetAddressOf());
-			immediateContext->PSSetSamplers(2, 1, samplerStates[2].GetAddressOf());
+			immediateContext_->PSSetSamplers(0, 1, samplerStates_[0].GetAddressOf());
+			immediateContext_->PSSetSamplers(1, 1, samplerStates_[1].GetAddressOf());
+			immediateContext_->PSSetSamplers(2, 1, samplerStates_[2].GetAddressOf());
 		}
 
 	public:
 		
 
-		BOOL fullscreenMode;
+		BOOL fullscreenMode_;
 #if _DEBUG
-		BOOL vsync{ FALSE };//垂直同期
-		BOOL tearingSupported{ TRUE };
+		BOOL vsync_{ FALSE };//垂直同期
+		BOOL tearingSupported_{ TRUE };
 #else
-		BOOL vsync{ TRUE };//垂直同期
-		BOOL tearingSupported{ FALSE };
+		BOOL vsync_{ TRUE };//垂直同期
+		BOOL tearingSupported_{ FALSE };
 #endif // _DEBUG
 
 
@@ -109,58 +109,58 @@ namespace Regal::Graphics
 		size_t VideoMemoryUsage()
 		{
 			DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
-			adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
+			adapter_->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo);
 			return videoMemoryInfo.CurrentUsage / 1024 / 1024;
 		}
 
 	private:
-		static Graphics* instance;
+		static Graphics* instance_;
 
-		Microsoft::WRL::ComPtr<IDXGIAdapter3> adapter;//メモリの使用状況の確認ができる
+		Microsoft::WRL::ComPtr<IDXGIAdapter3> adapter_;//メモリの使用状況の確認ができる
 
 
-		Microsoft::WRL::ComPtr<ID3D11Device>			device;
-		Microsoft::WRL::ComPtr<ID3D11DeviceContext>		immediateContext;
+		Microsoft::WRL::ComPtr<ID3D11Device>			device_;
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext>		immediateContext_;
 
 #if FULLSCREEN_VARSION
-		Microsoft::WRL::ComPtr<IDXGISwapChain1>			swapChain;
+		Microsoft::WRL::ComPtr<IDXGISwapChain1>			swapChain_;
 #else
-		Microsoft::WRL::ComPtr<IDXGISwapChain>			swapChain;
+		Microsoft::WRL::ComPtr<IDXGISwapChain>			swapChain_;
 #endif // 
 
-		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	renderTargetView;
-		Microsoft::WRL::ComPtr<ID3D11Texture2D>			depthStencilBuffer;
-		Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depthStencilView;
+		Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	renderTargetView_;
+		Microsoft::WRL::ComPtr<ID3D11Texture2D>			depthStencilBuffer_;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	depthStencilView_;
 
-		std::unique_ptr<Regal::Resource::Shader>		shader;
+		std::unique_ptr<Regal::Resource::Shader>		shader_;
 		//std::unique_ptr<DebugRenderer>					debugRenderer;
 		//std::unique_ptr<LineRenderer>					lineRenderer;
 		//std::unique_ptr<ImGuiRenderer>					imguiRenderer;
 
 		//各種ステート
-		Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerStates[3];
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> samplerStates_[3];
 
 		
 
-		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStates[4];
-		ID3D11DepthStencilState* setting2DDepthStencilState{ depthStencilStates[ZT_ON_ZW_ON].Get() };
-		ID3D11DepthStencilState* setting3DDepthStencilState{ depthStencilStates[ZT_ON_ZW_ON].Get() };
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilStates_[4];
+		ID3D11DepthStencilState* setting2DDepthStencilState_{ depthStencilStates_[ZT_ON_ZW_ON].Get() };
+		ID3D11DepthStencilState* setting3DDepthStencilState_{ depthStencilStates_[ZT_ON_ZW_ON].Get() };
 
-		Microsoft::WRL::ComPtr<ID3D11BlendState> blendStates[4];
-		ID3D11BlendState* setting2DBlendState{ blendStates[ALPHA].Get() };
-		ID3D11BlendState* setting3DBlendState{ blendStates[ALPHA].Get() };
+		Microsoft::WRL::ComPtr<ID3D11BlendState> blendStates_[4];
+		ID3D11BlendState* setting2DBlendState_{ blendStates_[ALPHA].Get() };
+		ID3D11BlendState* setting3DBlendState_{ blendStates_[ALPHA].Get() };
 
-		Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerStates[5];
-		ID3D11RasterizerState* setting2DRasterizerState{ rasterizerStates[SOLID].Get() };
-		ID3D11RasterizerState* setting3DRasterizerState{ rasterizerStates[SOLID].Get() };
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerStates_[5];
+		ID3D11RasterizerState* setting2DRasterizerState_{ rasterizerStates_[SOLID].Get() };
+		ID3D11RasterizerState* setting3DRasterizerState_{ rasterizerStates_[SOLID].Get() };
 
-		CONST HWND hwnd;
-		SIZE framebufferDimensions{SCREEN_WIDTH,SCREEN_HEIGHT};//スクリーンサイズ
+		CONST HWND hwnd_;
+		SIZE framebufferDimensions_{SCREEN_WIDTH,SCREEN_HEIGHT};//スクリーンサイズ
 
-		RECT windowedRect;
-		DWORD windowedStyle;
+		RECT windowedRect_;
+		DWORD windowedStyle_;
 
-		std::mutex mutex;
+		std::mutex mutex_;
 	};
 }
 

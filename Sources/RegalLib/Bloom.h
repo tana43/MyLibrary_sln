@@ -22,39 +22,39 @@ namespace Regal::Graphics
         void Bloom::Make(ID3D11DeviceContext* immediateContext, ID3D11ShaderResourceView* colorMap);
         ID3D11ShaderResourceView* ShaderResourceView() const
         {
-            return glowExtraction->shaderResourceViews[0].Get();
+            return glowExtraction_->shaderResourceViews_[0].Get();
         }
 
         void DrawDebug();
 
     public:
-        float bloomExtractionThreshold = 0.85f;
-        float bloomIntensity = 0.15f;
+        float bloomExtractionThreshold_ = 0.85f;
+        float bloomIntensity_ = 0.15f;
 
     private:
-        std::unique_ptr<FullscreenQuad> bitBlockTransfer;
-        std::unique_ptr<Framebuffer> glowExtraction;
+        std::unique_ptr<FullscreenQuad> bitBlockTransfer_;
+        std::unique_ptr<Framebuffer> glowExtraction_;
 
-        static const size_t downsampledCount = 6;
-        std::unique_ptr<Framebuffer> gaussianBlur[downsampledCount][2];
+        static const size_t downsampledCount_ = 6;
+        std::unique_ptr<Framebuffer> gaussianBlur_[downsampledCount_][2];
 
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> glowExtractionPs;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurDownsamplingPs;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurHorizontalPs;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurVerticalPs;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurUpsamplingPs;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> glowExtractionPs_;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurDownsamplingPs_;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurHorizontalPs_;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurVerticalPs_;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader> gaussianBlurUpsamplingPs_;
 
-        Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState;
-        Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState;
-        Microsoft::WRL::ComPtr<ID3D11BlendState> blendState;
+        Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depthStencilState_;
+        Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizerState_;
+        Microsoft::WRL::ComPtr<ID3D11BlendState> blendState_;
 
         struct BloomConstants
         {
-            float bloomExtractionThreshold;
-            float bloomIntensity;
-            float something[2];
+            float bloomExtractionThreshold_;
+            float bloomIntensity_;
+            float something_[2];
         };
-        Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
+        Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer_;
     };
 }
 
